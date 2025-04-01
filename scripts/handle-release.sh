@@ -36,12 +36,9 @@ fi
 
 echo "Version bump type detected: $VERSION_BUMP"
 
-if [[ "$GITHUB_EVENT_NAME" == "pull_request" || "$GITHUB_EVENT_NAME" == "pull_request_target" ]]; then
-  IS_PR=true
-  BASE_COMMIT=$(jq -r .pull_request.base.sha "$GITHUB_EVENT_PATH")
-  echo "🔍 Diffing from PR base commit: $BASE_COMMIT → $GITHUB_SHA"
-
-  RAW_CHANGED=$(git diff --name-only "$BASE_COMMIT"..."$GITHUB_SHA" | grep '^packages/' | awk -F/ '{print $2}' | sort -u)
+if [[ "$IS_PR" == "true" && -n "$PR_BRANCH" ]]; then
+  git fetch origin "$PR_BRANCH:$PR_BRANCH"
+  RAW_CHANGED=$(git diff --name-only origin/main..."$PR_BRANCH" | grep '^packages/' | awk -F/ '{print $2}' | sort -u)
 
   CHANGED=""
   for DIR in $RAW_CHANGED; do
