@@ -1,3 +1,4 @@
+
 #!/bin/bash
 set -e
 
@@ -41,12 +42,12 @@ if [[ "$IS_PR" == "true" && -n "$PR_BRANCH" ]]; then
   CHANGED=$(git diff --name-only origin/main..."$PR_BRANCH" | grep '^packages/' | cut -d/ -f2 | sort -u)
 
 elif [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
-  LATEST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-  if [[ -n "$LATEST_TAG" ]]; then
+  if git describe --tags --abbrev=0 >/dev/null 2>&1; then
+    LATEST_TAG=$(git describe --tags --abbrev=0)
     echo "Latest tag found: $LATEST_TAG"
     CHANGED=$(git diff --name-only "$LATEST_TAG"...HEAD | grep '^packages/' | cut -d/ -f2 | sort -u)
   else
-    echo "No tags found, falling back to HEAD~1"
+    echo "No tags found. Falling back to HEAD~1."
     CHANGED=$(git diff --name-only HEAD~1 | grep '^packages/' | cut -d/ -f2 | sort -u)
   fi
 fi
@@ -178,14 +179,7 @@ for PKG in "${PUBLISH_ORDER[@]}"; do
       yarn build
       npm publish --access public
       git tag "$PACKAGE_NAME@$NEW_VERSION"
-      git stash --include-untracked
-
-      git pull origin main --rebase
-
-      git stash pop || true
-
       git push https://x-access-token:${GH_PAT}@github.com/shanmukh0504/monorepo.git HEAD:main --tags
-
     else
       echo "Skipping commit for PR."
     fi
