@@ -172,17 +172,6 @@ for PKG in "${PUBLISH_ORDER[@]}"; do
       yarn build
       npm publish --access public
       git tag "$PACKAGE_NAME@$NEW_VERSION"
-      if [[ -n $(git status --porcelain) ]]; then
-        echo "Committing any pending changes before rebase..."
-        git add .
-        git -c user.email="$COMMIT_EMAIL" \
-            -c user.name="$COMMIT_NAME" \
-            commit -m "commit version bump before rebase"
-      fi
-
-      echo "Rebasing onto latest origin/main before pushing..."
-      git pull --rebase origin main
-
       git push https://x-access-token:${GH_PAT}@github.com/shanmukh0504/monorepo.git HEAD:main --tags
     else
       echo "Skipping commit for PR."
