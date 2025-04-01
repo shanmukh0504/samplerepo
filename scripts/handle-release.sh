@@ -98,7 +98,7 @@ done
 declare -A SHOULD_PUBLISH
 queue=()
 for CHG in $CHANGED; do
-  CHG_PKG="@shanmukh0504/$CHG"
+  CHG_PKG="$CHG"
   SHOULD_PUBLISH[$CHG_PKG]=1
   queue+=("$CHG_PKG")
 done
