@@ -178,6 +178,7 @@ for PKG in "${PUBLISH_ORDER[@]}"; do
       yarn build
       npm publish --access public
       git tag "$PACKAGE_NAME@$NEW_VERSION"
+      git pull origin main --rebase
       git push https://x-access-token:${GH_PAT}@github.com/shanmukh0504/monorepo.git HEAD:main --tags
     else
       echo "Skipping commit for PR."
