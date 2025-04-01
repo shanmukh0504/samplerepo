@@ -86,6 +86,18 @@ fi
 
 TOPO_ORDER=$(yarn workspaces foreach --all --topological --no-private exec node -p "require('./package.json').name" 2>/dev/null | grep '^@' | sed 's/\[//;s/\]://')
 
+declare -A PKG_NAME_TO_DIR
+
+for DIR in packages/*; do
+  if [[ -f "$DIR/package.json" ]]; then
+    NAME=$(jq -r .name "$DIR/package.json")
+    if [[ "$NAME" != "null" && -n "$NAME" ]]; then
+      DIR_NAME=$(basename "$DIR")
+      PKG_NAME_TO_DIR[$NAME]="$DIR_NAME"
+    fi
+  fi
+done
+
 declare -A REVERSE_DEP_MAP
 for PKG in $TOPO_ORDER; do
   PKG_DIR=$(echo "$PKG" | cut -d/ -f2)
@@ -160,7 +172,7 @@ export -f increment_version
 for PKG in "${PUBLISH_ORDER[@]}"; do
   echo ""
   echo "📦 Processing $PKG..."
-  PKG_DIR=$(echo "$PKG" | cut -d/ -f2)
+  PKG_DIR="${PKG_NAME_TO_DIR[$PKG]}"
   cd "packages/$PKG_DIR"
 
   PACKAGE_NAME=$(jq -r .name package.json)
