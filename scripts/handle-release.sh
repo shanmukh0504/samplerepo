@@ -43,10 +43,16 @@ if [[ "$IS_PR" == "true" && -n "$PR_BRANCH" ]]; then
   CHANGED=$(git diff --name-only origin/main..."$PR_BRANCH" | grep '^packages/' | cut -d/ -f2 | sort -u)
 
 elif [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
-  # Get changed directories (package folder names)
-  RAW_CHANGED=$(git diff --name-only "$LATEST_TAG"...HEAD | grep '^packages/' | awk -F/ '{print $2}' | sort -u)
+  if git describe --tags --abbrev=0 >/dev/null 2>&1; then
+    LATEST_TAG=$(git describe --tags --abbrev=0)
+    echo "Latest tag found: $LATEST_TAG"
+    RAW_CHANGED=$(git diff --name-only "$LATEST_TAG"...HEAD | grep '^packages/' | awk -F/ '{print $2}' | sort -u)
+  else
+    echo "No tags found. Falling back to HEAD~1."
+    RAW_CHANGED=$(git diff --name-only HEAD~1 | grep '^packages/' | awk -F/ '{print $2}' | sort -u)
+  fi
 
-  # Convert directory names to actual package names via package.json
+  # Convert to real package names from package.json
   CHANGED=""
   for DIR in $RAW_CHANGED; do
     PKG_JSON="packages/$DIR/package.json"
@@ -57,6 +63,8 @@ elif [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
       fi
     fi
   done
+
+  # Deduplicate and clean up
   CHANGED=$(echo "$CHANGED" | sort -u)
 fi
 
