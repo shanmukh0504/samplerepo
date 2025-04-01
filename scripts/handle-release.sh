@@ -39,7 +39,20 @@ echo "Version bump type detected: $VERSION_BUMP"
 
 if [[ "$IS_PR" == "true" && -n "$PR_BRANCH" ]]; then
   git fetch origin "$PR_BRANCH:$PR_BRANCH"
-  CHANGED=$(git diff --name-only origin/main..."$PR_BRANCH" | grep '^packages/' | cut -d/ -f2 | sort -u)
+  RAW_CHANGED=$(git diff --name-only origin/main..."$PR_BRANCH" | grep '^packages/' | awk -F/ '{print $2}' | sort -u)
+
+  CHANGED=""
+  for DIR in $RAW_CHANGED; do
+    PKG_JSON="packages/$DIR/package.json"
+    if [[ -f "$PKG_JSON" ]]; then
+      PKG_NAME=$(jq -r .name "$PKG_JSON")
+      if [[ "$PKG_NAME" != "null" && -n "$PKG_NAME" ]]; then
+        CHANGED+="$PKG_NAME"$'\n'
+      fi
+    fi
+  done
+
+  CHANGED=$(echo "$CHANGED" | sort -u)
 
 elif [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
   if git describe --tags --abbrev=0 >/dev/null 2>&1; then
