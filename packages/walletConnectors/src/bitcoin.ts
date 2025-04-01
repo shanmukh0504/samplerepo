@@ -10,4 +10,4 @@ export const createVehicle = (confirmed: number, unconfirmed: number, total: num
     total
 });
 
-export const showBalance = (account: Balance) => console.log(`${account.confirmed} are confirmed ${account.unconfirmed} are unconfirmed. Total: ${account.total}`);
+export const showBalance = (account: Balance) => console.log(`${account.confirmed} are confirmed ${account.unconfirmed} are unconfirmed. Total utxos: ${account.total}`);
