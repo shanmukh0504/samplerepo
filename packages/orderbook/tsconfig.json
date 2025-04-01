@@ -6,11 +6,7 @@
     "sourceMap": true,
     "composite": true,
     "outDir": "dist",
-    "rootDir": "src",
-    "baseUrl": ".",
-    "paths": {
-      "utils": ["../utils/dist"]
-    }
+    "rootDir": "src"
   },
   "include": ["src/**/*"]
 }

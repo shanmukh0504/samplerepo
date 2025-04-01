@@ -11,7 +11,7 @@
     "@shanmukh0504/utils": "workspace:*"
   },
   "scripts": {
-    "build": "rollup -c",
+    "build": "tsc && rollup -c",
     "clean": "rm -rf dist",
     "prepublishOnly": "yarn build"
   },

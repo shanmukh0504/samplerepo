@@ -1,5 +1,5 @@
-import { createUser, showUser, Utils } from 'utils';
-import { getUserStatus } from 'orderbook';
+import { createUser, showUser, Utils } from '@shanmukh0504/utils';
+import { getUserStatus } from '@shanmukh0504/orderbook';
 
 export interface Garden {
     name: string;
