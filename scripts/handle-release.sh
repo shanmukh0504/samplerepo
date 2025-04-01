@@ -170,6 +170,18 @@ increment_version() {
 }
 export -f increment_version
 
+echo ""
+echo "🧱 Full Topological Build Order:"
+for PKG in $TOPO_ORDER; do
+  echo "- $PKG"
+done
+
+echo ""
+echo "🚀 Packages to Publish:"
+for PKG in "${PUBLISH_ORDER[@]}"; do
+  echo "- $PKG"
+done
+
 for PKG in "${PUBLISH_ORDER[@]}"; do
   echo ""
   echo "📦 Processing $PKG..."
