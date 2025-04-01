@@ -1,7 +1,6 @@
 
 #!/bin/bash
 set -e
-set -x
 
 COMMIT_EMAIL=$(git log -1 --pretty=format:'%ae')
 COMMIT_NAME=$(git log -1 --pretty=format:'%an')
@@ -43,23 +42,20 @@ if [[ "$IS_PR" == "true" && -n "$PR_BRANCH" ]]; then
   CHANGED=$(git diff --name-only origin/main..."$PR_BRANCH" | grep '^packages/' | cut -d/ -f2 | sort -u)
 
 elif [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
-  if git describe --tags --abbrev=0 >/dev/null 2>&1; then
-    LATEST_TAG=$(git describe --tags --abbrev=0)
-    echo "Latest tag found: $LATEST_TAG"
-    RAW_CHANGED_DIRS=$(git diff --name-only "$LATEST_TAG"...HEAD | grep '^packages/' | awk -F/ '{print $2}' | sort -u | uniq)
-  else
-    echo "No tags found. Falling back to HEAD~1."
-    RAW_CHANGED_DIRS=$(git diff --name-only HEAD~1 | grep '^packages/' | awk -F/ '{print $2}' | sort -u | uniq)
-  fi
+  # Get changed directories (package folder names)
+  RAW_CHANGED=$(git diff --name-only "$LATEST_TAG"...HEAD | grep '^packages/' | awk -F/ '{print $2}' | sort -u)
 
+  # Convert directory names to actual package names via package.json
   CHANGED=""
-  for DIR in $RAW_CHANGED_DIRS; do
-    if [[ -f "packages/$DIR/package.json" ]]; then
-      PKG_NAME=$(jq -r '.name' "packages/$DIR/package.json")
-      CHANGED+="$PKG_NAME"$'\n'
+  for DIR in $RAW_CHANGED; do
+    PKG_JSON="packages/$DIR/package.json"
+    if [[ -f "$PKG_JSON" ]]; then
+      PKG_NAME=$(jq -r .name "$PKG_JSON")
+      if [[ "$PKG_NAME" != "null" && -n "$PKG_NAME" ]]; then
+        CHANGED+="$PKG_NAME"$'\n'
+      fi
     fi
   done
-
   CHANGED=$(echo "$CHANGED" | sort -u)
 fi
 
@@ -93,8 +89,9 @@ done
 declare -A SHOULD_PUBLISH
 queue=()
 for CHG in $CHANGED; do
-  SHOULD_PUBLISH[$CHG]=1
-  queue+=("$CHG")
+  CHG_PKG="@shanmukh0504/$CHG"
+  SHOULD_PUBLISH[$CHG_PKG]=1
+  queue+=("$CHG_PKG")
 done
 
 while [ ${#queue[@]} -gt 0 ]; do
