@@ -64,6 +64,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rollup/plugin-alias@npm:^5.1.1":
+  version: 5.1.1
+  resolution: "@rollup/plugin-alias@npm:5.1.1"
+  peerDependencies:
+    rollup: ^1.20.0||^2.0.0||^3.0.0||^4.0.0
+  peerDependenciesMeta:
+    rollup:
+      optional: true
+  checksum: 10c0/00592400563b65689631e820bd72ff440f5cd21021bbd2f21b8558582ab58fd109067da77000091e40fcb8c20cabcd3a09b239a30e012bb47f6bc1a15b68ca59
+  languageName: node
+  linkType: hard
+
 "@rollup/plugin-commonjs@npm:^24.0.0":
   version: 24.1.0
   resolution: "@rollup/plugin-commonjs@npm:24.1.0"
@@ -169,6 +181,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@shanmukh0504/samplerepo@workspace:."
   dependencies:
+    "@rollup/plugin-alias": "npm:^5.1.1"
     ncp: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
