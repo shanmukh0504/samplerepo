@@ -1,7 +1,6 @@
 
 #!/bin/bash
 set -e
-set -x
 
 COMMIT_EMAIL=$(git log -1 --pretty=format:'%ae')
 COMMIT_NAME=$(git log -1 --pretty=format:'%an')
@@ -52,7 +51,6 @@ elif [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
     RAW_CHANGED=$(git diff --name-only HEAD~1 | grep '^packages/' | awk -F/ '{print $2}' | sort -u)
   fi
 
-  # Convert to real package names from package.json
   CHANGED=""
   for DIR in $RAW_CHANGED; do
     PKG_JSON="packages/$DIR/package.json"
@@ -64,7 +62,6 @@ elif [[ "$GITHUB_EVENT_NAME" == "push" ]]; then
     fi
   done
 
-  # Deduplicate and clean up
   CHANGED=$(echo "$CHANGED" | sort -u)
 fi
 
