@@ -8,8 +8,8 @@
   "license": "MIT",
   "type": "module",
   "dependencies": {
-    "@shanmukh0504/utils": "workspace:*",
-    "@shanmukh0504/orderbook": "workspace:*"
+    "@shanmukh0504/orderbook": "workspace:*",
+    "@shanmukh0504/utils": "workspace:*"
   },
   "scripts": {
     "build": "rollup -c",
