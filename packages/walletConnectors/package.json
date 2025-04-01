@@ -12,6 +12,9 @@
     "clean": "rm -rf dist",
     "prepublishOnly": "yarn build"
   },
+  "dependencies": {
+    "@shanmukh0504/utils": "workspace:*"
+  },
   "devDependencies": {
     "@rollup/plugin-commonjs": "^24.0.0",
     "@rollup/plugin-node-resolve": "^13.3.0",
