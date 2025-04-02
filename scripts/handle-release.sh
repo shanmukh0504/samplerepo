@@ -91,7 +91,7 @@ if [[ -z "$CHANGED" ]]; then
 fi
 
 TOPO_ORDER=$(yarn workspaces foreach --all --topological --no-private exec node -p "require('./package.json').name" 2>/dev/null | grep '^@' | sed 's/\[//;s/\]://')
-echo "$TOPO_ORDER"
+echo "TOPO Order: $TOPO_ORDER"
 
 declare -A PKG_NAME_TO_DIR
 
@@ -107,11 +107,25 @@ done
 
 declare -A REVERSE_DEP_MAP
 for PKG in $TOPO_ORDER; do
-  PKG_DIR=$(echo "$PKG" | cut -d/ -f2)
+  PKG_DIR="${PKG_NAME_TO_DIR[$PKG]}"
+  if [[ -z "$PKG_DIR" ]]; then
+    echo "⚠️ Skipping $PKG: Directory not found in PKG_NAME_TO_DIR"
+    continue
+  fi
+
   DEPS=$(jq -r '.dependencies // {} | keys[]' "packages/$PKG_DIR/package.json" 2>/dev/null | grep '^@shanmukh0504/' || true)
   for DEP in $DEPS; do
-    REVERSE_DEP_MAP[$DEP]="${REVERSE_DEP_MAP[$DEP]} $PKG"
+    if [[ -n "${REVERSE_DEP_MAP[$DEP]}" ]]; then
+      REVERSE_DEP_MAP[$DEP]="${REVERSE_DEP_MAP[$DEP]} $PKG"
+    else
+      REVERSE_DEP_MAP[$DEP]="$PKG"
+    fi
   done
+done
+
+echo "🔁 Reverse Dependency Map:"
+for dep in "${!REVERSE_DEP_MAP[@]}"; do
+  echo "$dep ← ${REVERSE_DEP_MAP[$dep]}"
 done
 
 declare -A SHOULD_PUBLISH
