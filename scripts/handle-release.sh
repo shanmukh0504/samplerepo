@@ -203,10 +203,11 @@ for PKG in "${PUBLISH_ORDER[@]}"; do
   fi
 
   echo "Bumping $PACKAGE_NAME to $NEW_VERSION"
+  yarn workspaces foreach --topological --no-private run build
   jq --arg new_version "$NEW_VERSION" '.version = $new_version' package.json > package.tmp.json && mv package.tmp.json package.json
 
   if [[ "$VERSION_BUMP" == "prerelease" ]]; then
-    yarn workspaces foreach -Atp --include \"packages/*\" run build
+    yarn build
     npm publish --tag beta --access public
   else
     if [[ "$IS_PR" != "true" ]]; then
@@ -214,7 +215,7 @@ for PKG in "${PUBLISH_ORDER[@]}"; do
       git -c user.email="$COMMIT_EMAIL" \
           -c user.name="$COMMIT_NAME" \
           commit -m "V$NEW_VERSION"
-      yarn workspaces foreach -Atp --include \"packages/*\" run build
+      yarn build
       npm publish --access public
       git tag "$PACKAGE_NAME@$NEW_VERSION"
       git push https://x-access-token:${GH_PAT}@github.com/shanmukh0504/samplerepo.git HEAD:main --tags
