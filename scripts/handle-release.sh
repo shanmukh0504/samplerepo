@@ -118,11 +118,6 @@ for PKG in $TOPO_ORDER; do
   done
 done
 
-echo "🔁 Reverse Dependency Map:"
-for dep in "${!REVERSE_DEP_MAP[@]}"; do
-  echo "$dep ← ${REVERSE_DEP_MAP[$dep]}"
-done
-
 declare -A SHOULD_PUBLISH
 queue=()
 for CHG in $CHANGED; do
