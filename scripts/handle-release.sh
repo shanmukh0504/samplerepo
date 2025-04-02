@@ -91,6 +91,7 @@ if [[ -z "$CHANGED" ]]; then
 fi
 
 TOPO_ORDER=$(yarn workspaces foreach --all --topological --no-private exec node -p "require('./package.json').name" 2>/dev/null | grep '^@' | sed 's/\[//;s/\]://')
+echo "$TOPO_ORDER"
 
 declare -A PKG_NAME_TO_DIR
 
