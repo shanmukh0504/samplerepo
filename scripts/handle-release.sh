@@ -38,12 +38,7 @@ echo "Version bump type detected: $VERSION_BUMP"
 
 if [[ "$IS_PR" == "true" && -n "$PR_BRANCH" ]]; then
   git fetch origin "$PR_BRANCH:$PR_BRANCH"
-
-  if ! git rev-parse --verify "$PR_BRANCH@{1}" >/dev/null 2>&1; then
-    RAW_CHANGED=$(git diff --name-only origin/main..."$PR_BRANCH" | grep '^packages/' | awk -F/ '{print $2}' | sort -u)
-  else
-    RAW_CHANGED=$(git diff --name-only "$PR_BRANCH@{1}"..."$PR_BRANCH" | grep '^packages/' | awk -F/ '{print $2}' | sort -u)
-  fi
+  RAW_CHANGED=$(git diff --name-only origin/main..."$PR_BRANCH" | grep '^packages/' | awk -F/ '{print $2}' | sort -u)
 
   CHANGED=""
   for DIR in $RAW_CHANGED; do
@@ -121,11 +116,6 @@ for PKG in $TOPO_ORDER; do
       REVERSE_DEP_MAP[$DEP]="$PKG"
     fi
   done
-done
-
-echo "🔁 Reverse Dependency Map:"
-for dep in "${!REVERSE_DEP_MAP[@]}"; do
-  echo "$dep ← ${REVERSE_DEP_MAP[$dep]}"
 done
 
 declare -A SHOULD_PUBLISH
