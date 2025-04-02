@@ -203,7 +203,7 @@ for PKG in "${PUBLISH_ORDER[@]}"; do
   fi
 
   echo "Bumping $PACKAGE_NAME to $NEW_VERSION"
-  yarn workspaces foreach --topological --no-private run build
+  yarn workspaces foreach --all --topological --no-private run build
   jq --arg new_version "$NEW_VERSION" '.version = $new_version' package.json > package.tmp.json && mv package.tmp.json package.json
 
   if [[ "$VERSION_BUMP" == "prerelease" ]]; then
