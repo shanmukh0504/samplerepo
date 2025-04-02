@@ -12,5 +12,5 @@ export const createVehicle = (confirmed: number, unconfirmed: number, total: num
     total
 });
 
-export const showBalance = (account: Balance) => console.log(`${account.confirmed} are confirmed and ${account.unconfirmed} are unconfirmed. Total: ${account.total}`);
+export const showBalance = (account: Balance) => console.log(`${account.confirmed} are confirmed and ${account.unconfirmed} are unconfirmed.`);
 export const showUser = (user: Utils) => console.log(`User ${user.addr} will expire at ${user.exp}.`);
