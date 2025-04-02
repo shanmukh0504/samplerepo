@@ -207,7 +207,6 @@ for PKG in "${PUBLISH_ORDER[@]}"; do
   jq --arg new_version "$NEW_VERSION" '.version = $new_version' package.json > package.tmp.json && mv package.tmp.json package.json
 
   if [[ "$VERSION_BUMP" == "prerelease" ]]; then
-    yarn build
     npm publish --tag beta --access public
   else
     if [[ "$IS_PR" != "true" ]]; then
@@ -215,7 +214,6 @@ for PKG in "${PUBLISH_ORDER[@]}"; do
       git -c user.email="$COMMIT_EMAIL" \
           -c user.name="$COMMIT_NAME" \
           commit -m "V$NEW_VERSION"
-      yarn build
       npm publish --access public
       git tag "$PACKAGE_NAME@$NEW_VERSION"
       git push https://x-access-token:${GH_PAT}@github.com/shanmukh0504/samplerepo.git HEAD:main --tags
