@@ -5,4 +5,4 @@ export interface Utils {
 
 export const createUser = (addr: string, exp: number): Utils => ({ addr, exp });
 
-export const showUser = (user: Utils) => console.log(`User ${user.addr} will expire at ${user.exp}.`);
+export const showUser = (user: Utils) => console.log(`User ${user.addr} at ${user.exp}.`);
